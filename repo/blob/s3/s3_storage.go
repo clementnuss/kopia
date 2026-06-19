@@ -273,6 +273,11 @@ func (s *s3Storage) ListBlobs(ctx context.Context, prefix blob.ID, callback func
 			Timestamp: o.LastModified,
 		}
 
+		// additional fix for misbehaved S3 implementations that do not properly filter when passed _ as the prefix
+		if !strings.HasPrefix(string(bm.BlobID), string(prefix)) {
+			continue
+		}
+
 		if bm.BlobID == ConfigName {
 			continue
 		}
